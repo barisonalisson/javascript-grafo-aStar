@@ -1,29 +1,29 @@
 class AStar {
   constructor(graph, start, goal) {
-    this.graph = graph;  // Grafo com os vértices e arestas
-    this.start = start;  // Nó inicial
-    this.goal = goal;    // Nó objetivo
-    this.openList = [];   // Lista de nós a serem explorados
-    this.closedList = new Set();  // Lista de nós já explorados
-    this.gScore = {};  // Geração do custo acumulado até o nó
-    this.fScore = {};  // Estimativa total (g(n) + h(n))
-    this.cameFrom = {}; // Para reconstruir o caminho
+    this.graph = graph;  // Graph with vertices and edges
+    this.start = start;  // Start node
+    this.goal = goal;    // Goal node
+    this.openList = [];   // List of nodes to be explored
+    this.closedList = new Set();  // List of already explored nodes
+    this.gScore = {};  // Accumulated cost to reach the node
+    this.fScore = {};  // Total estimated cost (g(n) + h(n))
+    this.cameFrom = {}; // To reconstruct the path
 
-    // Inicializando as listas
+    // Initializing lists
     this.openList.push(start);
-    this.gScore[start] = 0;  // Custo de ir de start até start é 0
-    this.fScore[start] = this.heuristic(start);  // A heurística inicial
+    this.gScore[start] = 0;  // Cost from start to start is 0
+    this.fScore[start] = this.heuristic(start);  // Initial heuristic estimate
   }
 
-  // Função de Heurística: Usando a distância restante como estimativa
+  // Heuristic function: Using remaining distance as an estimate
   heuristic(node) {
-    // Neste exemplo, vamos utilizar a distância como heurística
-    // A distância será a distância entre o nó atual e o objetivo.
+    // In this example, we use distance as the heuristic
+    // The distance is measured between the current node and the goal.
     if (!this.graph[node] || !this.graph[this.goal]) return Infinity;
     return this.graph[node][this.goal]?.distance || Infinity;
   }
 
-  // Função para reconstruir o caminho
+  // Function to reconstruct the path
   reconstructPath(current) {
     let path = [current];
     while (this.cameFrom[current]) {
@@ -33,38 +33,38 @@ class AStar {
     return path.reverse();
   }
 
-  // Função A* que retorna o caminho mais curto
+  // A* algorithm function that returns the shortest path
   findPath() {
     while (this.openList.length > 0) {
-      // Escolher o nó com o menor fScore
+      // Choose the node with the lowest fScore
       let current = this.openList.reduce((a, b) => {
         return this.fScore[a] < this.fScore[b] ? a : b;
       });
 
-      // Se chegamos no objetivo, reconstruímos o caminho
+      // If we reached the goal, reconstruct the path
       if (current === this.goal) {
         return this.reconstructPath(current);
       }
 
-      // Mover o nó atual para a closedList
+      // Move the current node to the closedList
       this.openList = this.openList.filter(node => node !== current);
       this.closedList.add(current);
 
-      // Explorar os vizinhos
+      // Explore neighbors
       for (let neighbor in this.graph[current]) {
         if (this.closedList.has(neighbor)) continue;
 
-        // Cálculo do custo de g(n) usando o peso da aresta
+        // Compute tentative g(n) cost using edge weight
         let tentativeGScore = this.gScore[current] + this.graph[current][neighbor].weight;
 
-        // Se o vizinho não estiver na openList ou encontrarmos um caminho melhor
+        // If the neighbor is not in openList or we found a better path
         if (!this.openList.includes(neighbor) || tentativeGScore < this.gScore[neighbor]) {
-          // Atualizar os valores
+          // Update values
           this.cameFrom[neighbor] = current;
           this.gScore[neighbor] = tentativeGScore;
           this.fScore[neighbor] = tentativeGScore + this.heuristic(neighbor);
 
-          // Adicionar o vizinho à openList se ainda não estiver lá
+          // Add neighbor to openList if not already there
           if (!this.openList.includes(neighbor)) {
             this.openList.push(neighbor);
           }
@@ -72,8 +72,9 @@ class AStar {
       }
     }
 
-    // Se não encontramos um caminho, retornamos null
+    // If no path is found, return null
     return null;
   }
 }
+
 module.exports = AStar;
