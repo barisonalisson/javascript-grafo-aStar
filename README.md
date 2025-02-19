@@ -26,9 +26,9 @@ The algorithm works by maintaining two lists (open and closed) and uses a heuris
 npm install javascript-grafo-astar
 ```
 
-## Usage
+## Usage / Examples
 
-### Basic Example
+### Basic
 ```javascript
 const AStar = require('javascript-grafo-astar');
 
@@ -59,6 +59,78 @@ const astar = new AStar(graph, 'A', 'D');
 const path = astar.findPath();
 console.log(path); // ['A', 'C', 'D']
 ```
+
+### City Navigation Example
+This example demonstrates how to use the A* algorithm to find the shortest path between Brazilian cities.
+
+```javascript
+// Importing AStar class
+const AStar = require('./astar');
+
+// Example 1: City Navigation
+function citiesExample() {
+    // Graph representing cities and their connections
+    // weight represents distance in km and distance is the straight-line distance to destination
+    const cityMap = {
+        'SaoPaulo': {
+            'RioDeJaneiro': { weight: 400, distance: 350 },
+            'BeloHorizonte': { weight: 500, distance: 480 },
+            'Curitiba': { weight: 300, distance: 280 }
+        },
+        'RioDeJaneiro': {
+            'SaoPaulo': { weight: 400, distance: 350 },
+            'BeloHorizonte': { weight: 450, distance: 420 }
+        },
+        'BeloHorizonte': {
+            'SaoPaulo': { weight: 500, distance: 480 },
+            'RioDeJaneiro': { weight: 450, distance: 420 },
+            'Brasilia': { weight: 600, distance: 580 }
+        },
+        'Curitiba': {
+            'SaoPaulo': { weight: 300, distance: 280 },
+            'Florianopolis': { weight: 250, distance: 220 }
+        },
+        'Florianopolis': {
+            'Curitiba': { weight: 250, distance: 220 }
+        },
+        'Brasilia': {
+            'BeloHorizonte': { weight: 600, distance: 580 }
+        }
+    };
+
+    const astar = new AStar(cityMap, 'SaoPaulo', 'Brasilia');
+    const path = astar.findPath();
+    console.log('Best route from SaoPaulo to Brasilia:', path);
+}
+```
+
+#### Visual Representation of the Cities Graph
+Below is a visualization of the cities and their connections. The numbers on the edges represent the distance in kilometers between cities.
+
+```mermaid
+graph LR
+    SP[São Paulo]
+    RJ[Rio de Janeiro]
+    BH[Belo Horizonte]
+    CWB[Curitiba]
+    FLN[Florianópolis]
+    BSB[Brasília]
+    
+    SP --- |400km| RJ
+    SP --- |500km| BH
+    SP --- |300km| CWB
+    RJ --- |450km| BH
+    BH --- |600km| BSB
+    CWB --- |250km| FLN
+
+    style SP fill:#f9f,stroke:#333,stroke-width:2px
+    style BSB fill:#f9f,stroke:#333,stroke-width:2px
+```
+
+In this example, when finding the path from São Paulo to Brasília, the algorithm will determine that the optimal route is:
+`São Paulo → Belo Horizonte → Brasília`
+
+
 
 ### Graph Structure
 The graph should be structured as an adjacency list where each node contains its neighbors with their respective weights and distances:
